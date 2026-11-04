@@ -4,7 +4,8 @@ const postTitle = document.querySelector('.post-title');
 const postBody = document.querySelector('.post-body');
 
   postForm.addEventListener('submit', async (event) => {
-   event.preventDefault();
+    event.preventDefault();
+    try{
    const postData = {
     title: postTitle.value,
     body: postBody.value,
@@ -15,12 +16,16 @@ const postBody = document.querySelector('.post-body');
     <article>
         <p>${newPost.title}</p>
         <p>${newPost.body}</p>
+        <button class="delete-btn" data-id="${newPost.id}">Delete</button>
     </article>
 `;
 
 postsContainer.insertAdjacentHTML('afterbegin', newPostHtml);
 postTitle.value = "";
 postBody.value = "";
+  }  catch (error) {
+        console.log("Error:", error.message);
+    }
 });
 
 async function createPost(postData) {
@@ -40,8 +45,8 @@ async function createPost(postData) {
 }
 
   async function getPost(){
-    const response = await fetch("https://dummyjson.com/posts")
-     if(!response.ok){
+   try{  const response = await fetch("https://dummyjson.com/posts")
+    if(!response.ok){
         throw new Error("something went to wrong")
      }
      const data = await response.json();
@@ -52,11 +57,49 @@ async function createPost(postData) {
          return    `   <article>
                     <p>${item.title}</p>
                     <p>${item.body}</p>
+                    <button class="delete-btn" data-id="${item.id}">Delete</button>
 
                 </article>
                 `
 });
    postsContainer.innerHTML = postsHtml.join("")
-   console.log(postsContainer)
+ 
+
+   
+} catch(error){
+    console.log("Error", error.message)
+}
+
   }
   getPost()
+
+
+   postsContainer.addEventListener('click', async (event) => {
+    if (event.target.classList.contains('delete-btn')) {
+        const button = event.target;
+        const postId = button.dataset.id;
+
+        try {
+            await deletePost(postId);
+            button.parentElement.remove();
+        } catch (error) {
+            console.log("Error:", error.message);
+        }
+    }
+});
+
+  async function deletePost(postId) {
+    const response = await fetch(
+        `https://dummyjson.com/posts/${postId}`,
+        {
+            method: "DELETE"
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to delete post");
+    }
+
+    const data = await response.json();
+    return data;
+}
