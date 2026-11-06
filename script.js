@@ -2,6 +2,7 @@
 const postForm = document.querySelector('.post-form');
 const postTitle = document.querySelector('.post-title');
 const postBody = document.querySelector('.post-body');
+  
 
   postForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -103,3 +104,25 @@ async function createPost(postData) {
     const data = await response.json();
     return data;
 }
+ const profession = {
+  profession: "Data Analyst"
+}
+async function patchProfession(){
+    const response = await fetch("https://dummyjson.com/users/1", {
+        method: "PATCH",
+        headers: {
+         "content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            company: {
+                title: "Data Analyst"
+            }
+            })
+    }); if(!response.ok){
+        throw new Error ("result is not working")
+    }
+    const data = await response.json();
+    console.log(data)
+
+}
+patchProfession()
